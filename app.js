@@ -4,7 +4,8 @@ var express = require("express"),
     nunjucks = require("express-nunjucks"),
     bodyParser = require("body-parser"),
     cookieParser = require("cookie-parser"),
-    config = require("./config.json");
+    config = require("./config.json"),
+    package = require("./package.json");
 
 // Setup Express App
 var app = express();
@@ -24,6 +25,11 @@ app.use(session({
     resave: false,
     saveUninitialized: false
 }));
+
+// App Local Variables
+app.locals = {
+    version: package.version
+}
 
 app.get("/", function(req, res) {
     res.render("template");
