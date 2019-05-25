@@ -2,6 +2,7 @@
 var express = require("express"),
     session = require("express-session"),
     nunjucks = require("express-nunjucks"),
+    mongodb = require("express-mongo-db"),
     bodyParser = require("body-parser"),
     cookieParser = require("cookie-parser"),
     config = require("./config.json"),
@@ -25,14 +26,59 @@ app.use(session({
     resave: false,
     saveUninitialized: false
 }));
+app.use(mongodb("mongodb://localhost/rotait"));
 
 // App Local Variables
 app.locals = {
     version: package.version
 }
 
+// Session Local Variables
+app.get("*", function(req, res, next) {
+    res.locals = req.session;
+    next();
+});
+
+// Get Main Page
 app.get("/", function(req, res) {
     res.render("template");
+});
+
+// Accept Login Details
+app.post("/login/", function(req, res) {
+    req.db.collection("users").findOne({
+        staffNumber: req.body.staffNumber,
+        password: req.body.password
+    }, function(err, resp) {
+        if (!err) {
+            if (resp) {
+                req.session.loggedin = resp.staffNumber;
+                req.session.name = resp.firstName + " " + resp.lastName;
+                res.send({
+                    status: 200,
+                    message: "Login Successful"
+                });
+            }
+            else {
+                res.send({
+                    status: 404,
+                    message: "User Account Not Found"
+                });
+            }
+        }
+        else {
+            res.send({
+                status: 500,
+                message: "Database Connection Failure"
+            });
+        }
+    });
+});
+
+// Accept Logout Requests
+app.post("/logout/", function(req, res) {
+    req.session.destroy();
+    res.sendStatus(200);
 });
 
 // Run Server
