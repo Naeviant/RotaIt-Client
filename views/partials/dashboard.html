@@ -1,0 +1,39 @@
+<link rel="stylesheet" href="/css/rota.css">
+
+<div class="row valign-wrapper" style="height: 100%; margin: 0;">
+    <div class="col s12 m8 offset-m2 l4 offset-l4">
+        <div class="card">
+            <div class="card-content">
+                <h4 class="center">Upcoming Shifts</h4>
+            </div>
+        </div>
+        {% for shift in shifts %}
+            <div class="card {% if shift.type == "early" %} yellow {% elseif shift.type == "middle" %} orange {% elseif shift.type == "late" %} pink {% elseif shift.type == "maternity" or shift.type == "paternity" or shift.type == "sickness" %} hashed purple {% elseif shift.type == "elsewhere" %} hashed black {% else %} green {% endif %} lighten-5">
+                <div class="card-content">
+                    <div class="row" style="margin: 0;">
+                        <div class="col s6">
+                            <h5 style="margin-top: 0;">{{ shift.start|toDay }} {{ shift.start|toDate }}</h5>
+                        </div>
+                        <div class="col s6 right-align">
+                            <h5 style="margin-top: 0; text-transform: capitalize;" >{{ shift.type }}</h5>
+                        </div>
+                        <div class="col s12">
+                            {% if shift.type == "maternity" or shift.type == "paternity" or shift.type == "sickness" or shift.type == "elsewhere" %}
+                                <p>Until {{ shift.to|toDay }} {{ shift.to|toDate }}</p>
+                            {% else %}
+                                <p>{{ shift.start|toTime }} - {{ shift.end|toTime }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        {% if not shifts[0] %}
+            <div class="card">
+                <div class="card-content">
+                    <p class="center"><em>No data available.</em></p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>

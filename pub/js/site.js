@@ -39,6 +39,6 @@ $(document).delegate("#logout", "click", function() {
 // Load Initial Partial
 $(document).ready(function() {
     if (!$("#content").html().trim()) {
-        $(".sidenav a[data-page='staff']").click();
+        $(".sidenav a[data-page='dashboard']").click();
     }
 });
