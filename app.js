@@ -85,9 +85,11 @@ app.get("/partial/dashboard/", function(req, res) {
                     if (!query["$or"]) {
                         query["$or"] = [];
                     }
-                    query["$or"].push({
-                        weekNumber: week
-                    });
+                    if (query["$or"].map(function(x) { return x.weekNumber; }).indexOf(week) === -1) {
+                        query["$or"].push({
+                            weekNumber: week
+                        });
+                    }
                 }
                 req.db.collection("weeks").find(query, {
                     sort: [["weekNumber", "ascending"]]
@@ -104,9 +106,9 @@ app.get("/partial/dashboard/", function(req, res) {
                             resp.toArray().then(function(events) {
                                 var days = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
                                 for (var shift of shifts) {
-                                    var week = weeks[weekNumbers.indexOf(shift.weekNumber)],
+                                    var week = weeks[weeks.map(function(x) { return x.weekNumber; }).indexOf(shift.weekNumber)],
                                         d = new Date(shift.start),
-                                        e = new Date(shift.end)
+                                        e = new Date(shift.end);
                                         day = week[days[d.getDay()]],
                                         done = false;
                                     day.openCustomers.setUTCFullYear(d.getFullYear(), d.getMonth(), d.getDate());
@@ -163,6 +165,202 @@ app.get("/partial/dashboard/", function(req, res) {
         res.render("partials/error", {
             code: 403,
             message: "You are not authorised to view this page."
+        });
+    }
+});
+
+// Get Partial - Rota Search
+app.get("/partial/rota/", function(req, res) {
+    if (req.session.loggedin) {
+        res.render("partials/rota_search");
+    }
+    else {
+        res.render("partials/error", {
+            code: 403,
+            message: "You are not authorised to view this page."
+        });
+    }
+});
+
+// Get Partial - Rota View
+app.get("/partial/rota_view/", function(req, res) {
+    if (req.session.loggedin) {
+        if (req.query.week && req.query.year && !isNaN(parseInt(req.query.week)) && !isNaN(parseInt(req.query.year))) {
+            req.query.week = parseInt(req.query.week);
+            req.query.year = parseInt(req.query.year);
+            if (req.query.year >= 2000 && req.query.week >= 1 && req.query.week <= 53) {
+                req.db.collection("users").findOne({
+                    staffNumber: req.session.loggedin
+                }, function(err, resp) {
+                    req.db.collection("users").find({
+                        team: resp.team
+                    }, {
+                        sort: [["firstName", "ascending"]]
+                    }, function(err, resp) {
+                        resp.toArray().then(function(team) {
+                            req.db.collection("weeks").findOne({
+                                weekNumber: req.query.week,
+                                year: req.query.year
+                            }, function(err, week) {
+                                if (week && week.published === true) {
+                                    res.render("partials/rota_view", {
+                                        team: team,
+                                        week: week
+                                    });
+                                }
+                                else {
+                                    res.render("partials/error", {
+                                        code: 400,
+                                        message: "The rota for this week is not yet available."
+                                    });
+                                }
+                            });
+                        });
+                    });
+                });
+            }
+            else {
+                res.render("partials/error", {
+                    code: 400,
+                    message: "The week number or year was invalid."
+                });
+            }
+        }
+        else {
+            res.render("partials/error", {
+                code: 400,
+                message: "The week number or year was invalid."
+            });
+        }
+    }
+    else {
+        res.render("partials/error", {
+            code: 403,
+            message: "Authentication with the server failed. Please try again later."
+        });
+    }
+});
+
+// Get Week Data
+app.get("/week/", function(req, res) {
+if (req.session.loggedin) {
+        if (req.query.week && req.query.year) {
+            req.query.week = parseInt(req.query.week);
+            req.query.year = parseInt(req.query.year);
+            req.db.collection("weeks").findOne({
+                weekNumber: req.query.week,
+                year: req.query.year
+            }, function(err, week) {
+                res.send({
+                    status: 200,
+                    week: week
+                });
+            });
+        }
+        else {
+            res.send({
+                status: 400,
+                message: "Invalid Parameters Sent"
+            });
+        }
+    }
+    else {
+        res.send({
+            status: 403,
+            message: "Authentication Failed"
+        });
+    }
+});
+
+// Get Rota Data
+app.get("/rota/", function(req, res) {
+    if (req.session.loggedin) {
+        if (req.query.week && req.query.year) {
+            req.query.week = parseInt(req.query.week);
+            req.query.year = parseInt(req.query.year);
+            req.db.collection("shifts").find({
+                weekNumber: req.query.week,
+                year: req.query.year
+            }, function(err, shifts) {
+                shifts.toArray().then(function(rota) {
+                    res.send({
+                        status: 200,
+                        rota: rota
+                    });
+                });
+            });
+        }
+        else {
+            res.send({
+                status: 400,
+                message: "Invalid Parameters Sent"
+            });
+        }
+    }
+    else {
+        res.send({
+            status: 403,
+            message: "Authentication Failed"
+        });
+    }
+});
+
+// Get Event Data
+app.get("/events/", function(req, res) {
+    if (req.session.loggedin) {
+        if (req.query.week && req.query.year) {
+            var start = new Date(1547942400000 + (parseInt(req.query.week * 604800000))).getTime(),
+                end = new Date(1547942400000 + (parseInt(req.query.week * 604800000) + (6 * 86400000))).getTime();
+            req.db.collection("events").find({
+                $or: [
+                    { $and: [
+                            {
+                                from: {
+                                    $lte: start
+                                }
+                            },
+                            {
+                                to: {
+                                    $gte: start
+                                }
+                            }
+                        ] 
+                    },
+                    {
+                        $and: [
+                            {
+                                from: {
+                                    $gte: start
+                                }
+                            },
+                            {
+                                from: {
+                                    $lte: end
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }, function(err, resp) {
+                resp.toArray().then(function(events) {
+                    res.send({
+                        status: 200,
+                        events: events
+                    });
+                });
+            });
+        }
+        else {
+            res.send({
+                status: 400,
+                message: "Invalid Parameters Sent"
+            });
+        }
+    }
+    else {
+        res.send({
+            status: 403,
+            message: "Authentication Failed"
         });
     }
 });

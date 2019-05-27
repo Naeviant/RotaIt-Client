@@ -1,0 +1,141 @@
+<link rel="stylesheet" href="/css/rota.css">
+
+<div class="row valign-wrapper" style="height: 100%; margin: 0;">
+    <div class="col s12">
+        <div class="card">
+            <div class="card-content">
+                <div class="row" style="margin: 0;">
+                    <div class="col s12 center">
+                        <h4 id="header" data-week="{{ week.weekNumber }}" data-year="{{ week.year }}">
+                            Rota for Week {{ week.weekNumber }} ({{ week.year }})
+                            <a href="#modal-colours" class="btn-floating light-blue waves-effect waves-light right tooltipped modal-trigger" data-position="bottom" data-tooltip="Colour Key" style="margin-left: 5px;"><i class="material-icons">format_color_fill</i></a>
+                        </h4>
+                    </div>
+                    <div class="col s12" style="overflow-x: auto;">
+                        <table id="rota">
+                            <thead>
+                                <tr>
+                                    <td rowspan="3">Name & <br> Staff Number</td>
+                                    <td colspan="3">Sunday</td>
+                                    <td colspan="3">Monday</td>
+                                    <td colspan="3">Tuesday</td>
+                                    <td colspan="3">Wednesday</td>
+                                    <td colspan="3">Thursday</td>
+                                    <td colspan="3">Friday</td>
+                                    <td colspan="3">Saturday</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                    <td colspan="3"></td>
+                                </tr>
+                                <tr>
+                                    <td>In</td>
+                                    <td>Out</td>
+                                    <td>Break</td>
+                                    <td>In</td>
+                                    <td>Out</td>
+                                    <td>Break</td>
+                                    <td>In</td>
+                                    <td>Out</td>
+                                    <td>Break</td>
+                                    <td>In</td>
+                                    <td>Out</td>
+                                    <td>Break</td>
+                                    <td>In</td>
+                                    <td>Out</td>
+                                    <td>Break</td>
+                                    <td>In</td>
+                                    <td>Out</td>
+                                    <td>Break</td>
+                                    <td>In</td>
+                                    <td>Out</td>
+                                    <td>Break</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for staff in team %}
+                                    <tr>
+                                        <td style="border-left: 1px solid rgba(0,0,0,0.12);">{{ staff.firstName }} {{ staff.lastName }} <br> {{ staff.staffNumber }}</td>
+                                        <td style="border-left: 1px solid rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px solid rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px solid rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px solid rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px solid rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px solid rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px solid rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12); border-right: 1px solid rgba(0,0,0,0.12);"></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal-colours" class="modal bottom-sheet">
+    <div class="modal-content">
+        <h4>
+            Colour Key
+            <a href="#!" class="modal-close btn-flat right"><i class="material-icons">close</i></a>
+        </h4>
+        <table>
+            <tbody>
+                <tr>
+                    <td>No Colour</td>
+                    <td>No Shift</td>
+                </tr>
+                <tr>
+                    <td>Solid Yellow</td>
+                    <td>Early Shift</td>
+                </tr>
+                <tr>
+                    <td>Solid Orange</td>
+                    <td>Middle Shift</td>
+                </tr>
+                <tr>
+                    <td>Solid Pink</td>
+                    <td>Late Shift</td>
+                </tr>
+                <tr>
+                    <td>Solid Green</td>
+                    <td>Administrative Task</td>
+                </tr>
+                <tr>
+                    <td>Hashed Blue</td>
+                    <td>Annual Leave or Lieu Time</td>
+                </tr>
+                <tr>
+                    <td>Hashed Purple</td>
+                    <td>Long-Term Absence</td>
+                </tr>
+                <tr>
+                    <td>Hashed Red</td>
+                    <td>Suspension</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="/js/rota_view.js"></script>
