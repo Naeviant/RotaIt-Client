@@ -169,6 +169,24 @@ app.get("/partial/dashboard/", function(req, res) {
     }
 });
 
+// Get Partial - View Details
+app.get("/partial/details/", function(req, res) {
+    if (req.session.loggedin) {
+        req.db.collection("users").findOne({
+            staffNumber: req.session.loggedin
+        }, function(err, resp) {
+            res.render("partials/details", { user: resp });
+        });
+    }
+    else {
+        res.render("partials/error", {
+            code: 403,
+            message: "You are not authorised to view this page."
+        });
+    }
+});
+
+
 // Get Partial - Rota Search
 app.get("/partial/rota/", function(req, res) {
     if (req.session.loggedin) {

@@ -26,3 +26,8 @@ input:not([type]):focus:not([readonly])+label, input[type=text]:not(.browser-def
     border: 2px solid #03a9f4;
     background-color: #03a9f4;
 }
+
+/* Center Availability Table */
+#availability th, #availability td {
+    text-align: center;
+}

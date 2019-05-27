@@ -1,0 +1,118 @@
+<div class="row valign-wrapper" style="height: 100%; margin: 0;">
+    <div class="col s12">
+        <div class="row" style="margin: 0;">
+            <div class="col s12 m12 l6">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="row" style="margin: 0;">
+                            <div class="col s12">
+                                <h4 class="center">My Details</h4>
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <th>Full Name</th>
+                                            <td>{{ user.firstName }} {{ user.lastName }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Staff Number</th>
+                                            <td>{{ user.staffNumber }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Date of Birth</th>
+                                            <td>{{ user.dob|date }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Job Role</th>
+                                            <td>{{ user.jobRole }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Contracted Hours</th>
+                                            <td>{{ user.hours }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Maximum Overtime</th>
+                                            <td>{{ user.maxOvertime }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Hourly Pay</th>
+                                            <td>£{{ user.pay }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Email Address</th>
+                                            <td>{{ user.email }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col s12 m12 l6">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="row" style="margin: 0;">
+                            <div class="col s12">
+                                <h4 class="center">My Availability</h4>
+                                <table id="availability">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Mornings</th>
+                                            <th>Afternoons</th>
+                                            <th>Evenings</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th>Sun</th>
+                                            <td>{% if user.availability.sun.morning %}Yes{% else %}No{% endif %}</td>
+                                            <td>{% if user.availability.sun.afternoon %}Yes{% else %}No{% endif %}</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Mon</th>
+                                            <td>{% if user.availability.mon.morning %}Yes{% else %}No{% endif %}</td>
+                                            <td>{% if user.availability.mon.afternoon %}Yes{% else %}No{% endif %}</td>
+                                            <td>{% if user.availability.mon.evening %}Yes{% else %}No{% endif %}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Tue</th>
+                                            <td>{% if user.availability.tue.morning %}Yes{% else %}No{% endif %}</td>
+                                            <td>{% if user.availability.tue.afternoon %}Yes{% else %}No{% endif %}</td>
+                                            <td>{% if user.availability.tue.evening %}Yes{% else %}No{% endif %}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Wed</th>
+                                            <td>{% if user.availability.wed.morning %}Yes{% else %}No{% endif %}</td>
+                                            <td>{% if user.availability.wed.afternoon %}Yes{% else %}No{% endif %}</td>
+                                            <td>{% if user.availability.wed.evening %}Yes{% else %}No{% endif %}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Thu</th>
+                                            <td>{% if user.availability.thu.morning %}Yes{% else %}No{% endif %}</td>
+                                            <td>{% if user.availability.thu.afternoon %}Yes{% else %}No{% endif %}</td>
+                                            <td>{% if user.availability.thu.evening %}Yes{% else %}No{% endif %}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Fri</th>
+                                            <td>{% if user.availability.fri.morning %}Yes{% else %}No{% endif %}</td>
+                                            <td>{% if user.availability.fri.afternoon %}Yes{% else %}No{% endif %}</td>
+                                            <td>{% if user.availability.fri.evening %}Yes{% else %}No{% endif %}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Sat</th>
+                                            <td>{% if user.availability.sat.morning %}Yes{% else %}No{% endif %}</td>
+                                            <td>{% if user.availability.sat.afternoon %}Yes{% else %}No{% endif %}</td>
+                                            <td>{% if user.availability.sat.evening %}Yes{% else %}No{% endif %}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
