@@ -27,6 +27,18 @@ input:not([type]):focus:not([readonly])+label, input[type=text]:not(.browser-def
     background-color: #03a9f4;
 }
 
+.datepicker-date-display, .datepicker-table td.is-selected, button:focus {
+    background-color: #03a9f4;
+}
+
+.datepicker-day-button:focus {
+    background-color: rgba(3, 169, 244, 0.25);
+}
+
+.datepicker-table td.is-today:not(.is-selected), .datepicker-cancel, .datepicker-clear, .datepicker-today, .datepicker-done {
+    color: #03a9f4;
+}
+
 /* Center Availability Table */
 #availability th, #availability td {
     text-align: center;

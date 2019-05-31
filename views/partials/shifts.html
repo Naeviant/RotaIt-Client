@@ -8,7 +8,7 @@
             </div>
         </div>
         {% for shift in shifts %}
-            <div class="card {% if shift.type == "early" %} yellow {% elseif shift.type == "middle" %} orange {% elseif shift.type == "late" %} pink {% elseif shift.type == "maternity" or shift.type == "paternity" or shift.type == "sickness" %} hashed purple {% elseif shift.type == "elsewhere" %} hashed black {% else %} green {% endif %} lighten-5">
+            <div class="card {% if shift.type == "early" %} yellow {% elseif shift.type == "middle" %} orange {% elseif shift.type == "late" %} pink {% elseif shift.type == "maternity" or shift.type == "paternity" or shift.type == "sickness" %} hashed purple {% elseif shift.type == "elsewhere" %} hashed black {% elseif shift.type == "leave" %} hashed blue {% else %} green {% endif %} lighten-5">
                 <div class="card-content">
                     <div class="row" style="margin: 0;">
                         <div class="col s6">
@@ -18,7 +18,7 @@
                             <h5 style="margin-top: 0; text-transform: capitalize;" >{{ shift.type }}</h5>
                         </div>
                         <div class="col s12">
-                            {% if shift.type == "maternity" or shift.type == "paternity" or shift.type == "sickness" or shift.type == "elsewhere" %}
+                            {% if shift.type == "maternity" or shift.type == "paternity" or shift.type == "sickness" or shift.type == "elsewhere" or shift.type == "leave" %}
                                 <p>Until {{ shift.to|toDay }} {{ shift.to|toDate }}</p>
                             {% else %}
                                 <p>{{ shift.start|toTime }} - {{ shift.end|toTime }}</p>

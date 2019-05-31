@@ -65,8 +65,8 @@ app.get("/", function(req, res) {
     res.render("template");
 });
 
-// Get Partial - Dashboard
-app.get("/partial/dashboard/", function(req, res) {
+// Get Partial - Shifts
+app.get("/partial/shifts/", function(req, res) {
     if (req.session.loggedin) {
         var d = Date.now();
         req.db.collection("shifts").find({
@@ -151,7 +151,7 @@ app.get("/partial/dashboard/", function(req, res) {
                                     return 0;
                                 });
                                 shifts = shifts.slice(0, 5);
-                                res.render("partials/dashboard", {
+                                res.render("partials/shifts", {
                                     shifts: shifts
                                 });
                             })
@@ -168,24 +168,6 @@ app.get("/partial/dashboard/", function(req, res) {
         });
     }
 });
-
-// Get Partial - View Details
-app.get("/partial/details/", function(req, res) {
-    if (req.session.loggedin) {
-        req.db.collection("users").findOne({
-            staffNumber: req.session.loggedin
-        }, function(err, resp) {
-            res.render("partials/details", { user: resp });
-        });
-    }
-    else {
-        res.render("partials/error", {
-            code: 403,
-            message: "You are not authorised to view this page."
-        });
-    }
-});
-
 
 // Get Partial - Rota Search
 app.get("/partial/rota/", function(req, res) {
@@ -255,6 +237,62 @@ app.get("/partial/rota_view/", function(req, res) {
         res.render("partials/error", {
             code: 403,
             message: "Authentication with the server failed. Please try again later."
+        });
+    }
+});
+
+// Get Partial - View Details
+app.get("/partial/details/", function(req, res) {
+    if (req.session.loggedin) {
+        req.db.collection("users").findOne({
+            staffNumber: req.session.loggedin
+        }, function(err, resp) {
+            res.render("partials/details", { user: resp });
+        });
+    }
+    else {
+        res.render("partials/error", {
+            code: 403,
+            message: "You are not authorised to view this page."
+        });
+    }
+});
+
+// Get Partial - Leave Requests
+app.get("/partial/requests/", function(req, res) {
+    if (req.session.loggedin) {
+        var d = Date.now();
+        req.db.collection("events").find({
+            staffNumber: req.session.loggedin,
+            type: "leave",
+            to: {
+                $gt: d
+            }
+        }, {
+            sort: [["firstName", "ascending"]]
+        }, function(err, resp) {
+            resp.toArray().then(function(requests) {
+                res.render("partials/requests", { requests: requests });
+            });
+        });
+    }
+    else {
+        res.render("partials/error", {
+            code: 403,
+            message: "You are not authorised to view this page."
+        });
+    }
+});
+
+// Get Partial - New Leave Request
+app.get("/partial/requests_new/", function(req, res) {
+    if (req.session.loggedin) {
+        res.render("partials/requests_new");
+    }
+    else {
+        res.render("partials/error", {
+            code: 403,
+            message: "You are not authorised to view this page."
         });
     }
 });
@@ -383,6 +421,46 @@ app.get("/events/", function(req, res) {
     }
 });
 
+// Accept New Leave Requests
+app.post("/requests/", function(req, res) {
+    if (req.body.from && req.body.to) {
+        req.body.from = parseInt(req.body.from);
+        req.body.to = parseInt(req.body.to);
+        if (!req.body.comment) {
+            req.body.comment = "";
+        }
+        if (!isNaN(req.body.from) && !isNaN(req.body.to) && req.body.from <= req.body.to) {
+            req.db.collection("events").insertOne({
+                staffNumber: req.session.loggedin,
+                fullName: req.session.name,
+                type: "leave",
+                from: req.body.from,
+                to: req.body.to,
+                status: "pending",
+                user_comment: req.body.comment,
+                manager_comment: "" 
+            }, function(err, done) {
+                res.send({
+                    status: 200,
+                    message: "Leave Request Submitted"
+                });
+            });
+        }
+        else {
+            res.send({
+                status: 400,
+                message: "Invalid Parameters Sent"
+            });
+        }
+    }
+    else {
+        res.send({
+            status: 400,
+            message: "Invalid Parameters Sent"
+        });
+    }
+});
+
 // Accept Login Details
 app.post("/login/", function(req, res) {
     req.db.collection("users").findOne({
@@ -418,6 +496,39 @@ app.post("/login/", function(req, res) {
 app.post("/logout/", function(req, res) {
     req.session.destroy();
     res.sendStatus(200);
+});
+
+// Accept Leave Request Deletion Requests
+app.delete("/request/", function(req, res) {
+    if (req.session.loggedin) {
+        if (req.body && req.body.staffNumber && req.body.from && !isNaN(parseInt(req.body.from)) && req.body.to && !isNaN(parseInt(req.body.to))) {
+            req.body.from = parseInt(req.body.from);
+            req.body.to = parseInt(req.body.to);
+            req.db.collection("events").deleteOne({
+                staffNumber: req.body.staffNumber,
+                type: "leave",
+                from: req.body.from,
+                to: req.body.to
+            }, function(err, done) {
+                res.send({
+                    status: 200,
+                    message: "Leave Request Deleted Successfully"
+                });
+            });
+        }
+        else {
+            res.send({
+                status: 400,
+                message: "Missing Fields"
+            });
+        }
+    }
+    else {
+        res.send({
+            status: 403,
+            message: "Authentication Failed"
+        });
+    }
 });
 
 // Run Server
