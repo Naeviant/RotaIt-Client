@@ -16,9 +16,8 @@ function colour() {
 
                         for (var event of resp.events) {
                             for (var j = 1; j <= 7; j++) {
-                                var lower = new Date(Date.UTC(parseInt($("#rota thead tr:nth-of-type(2) td:nth-of-type(" + j + ")").html().split("/")[2]), parseInt($("#rota thead tr:nth-of-type(2) td:nth-of-type(" + j + ")").html().split("/")[1]) - 1, parseInt($("#rota thead tr:nth-of-type(2) td:nth-of-type(" + j + ")").html().split("/")[0]))).getTime();
-                                var higher = new Date(Date.UTC(parseInt($("#rota thead tr:nth-of-type(2) td:nth-of-type(" + j + ")").html().split("/")[2]), parseInt($("#rota thead tr:nth-of-type(2) td:nth-of-type(" + j + ")").html().split("/")[1]) - 1, parseInt($("#rota thead tr:nth-of-type(2) td:nth-of-type(" + j + ")").html().split("/")[0]), 23, 59, 59)).getTime();
-                                if (lower >= event.from && higher <= event.to && event.staffNumber == staffNumber) {
+                                var boundary = new Date(Date.UTC(parseInt($("#rota thead tr:nth-of-type(2) td:nth-of-type(" + j + ")").html().split("/")[2]), parseInt($("#rota thead tr:nth-of-type(2) td:nth-of-type(" + j + ")").html().split("/")[1]) - 1, parseInt($("#rota thead tr:nth-of-type(2) td:nth-of-type(" + j + ")").html().split("/")[0]))).getTime();
+                                if (boundary >= event.from && boundary <= event.to && event.staffNumber == staffNumber) {
                                     if (event.type == "interviewing" || event.type == "course") {
                                         $("#rota tbody tr:nth-of-type(" + (i + 1) + ") td:nth-of-type(" + (j * 3 - 1) + ")").addClass("green lighten-5");
                                         $("#rota tbody tr:nth-of-type(" + (i + 1) + ") td:nth-of-type(" + (j * 3) + ")").addClass("green lighten-5");

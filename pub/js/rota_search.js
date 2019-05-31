@@ -1,4 +1,4 @@
-$("#search").click(function() {
+function search() {
     var week = $("#week").val(),
         year = $("#year").val();
 
@@ -23,5 +23,15 @@ $("#search").click(function() {
         M.toast({
             html: "Please enter a week number and year."
         });
+    }
+}
+
+$("#search").click(function() {
+    search();
+});
+
+$(document).on("keypress", function(e) {
+    if (e.which == 13) {
+        search();
     }
 });

@@ -22,14 +22,20 @@
                                 </tr>
                             </thead>
                             <tbody style="max-height: 700px; overflow: auto;">
-                                {% for request in requests %}
+                                {% if requests[0] %}
+                                    {% for request in requests %}
+                                        <tr>
+                                            <td>{{ request.from|toDate }}</td>
+                                            <td>{{ request.to|toDate }}</td>
+                                            <td style="text-transform: capitalize;">{{ request.status }}</td>
+                                            <td><a id="view-request" data-user="{{ request.staffNumber }}" data-from="{{ request.from }}" data-to="{{ request.to }}" data-mycomments="{{ request.user_comment }}" data-managercomments="{{ request.manager_comment }}" class="waves-effect waves-light btn light-blue tooltipped" data-position="left" data-tooltip="View More"><i class="material-icons">more_horiz</i></a></td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
                                     <tr>
-                                        <td>{{ request.from|toDate }}</td>
-                                        <td>{{ request.to|toDate }}</td>
-                                        <td style="text-transform: capitalize;">{{ request.status }}</td>
-                                        <td><a id="view-request" data-user="{{ request.staffNumber }}" data-from="{{ request.from }}" data-to="{{ request.to }}" data-mycomments="{{ request.user_comment }}" data-managercomments="{{ request.manager_comment }}" class="waves-effect waves-light btn light-blue tooltipped" data-position="left" data-tooltip="View More"><i class="material-icons">more_horiz</i></a></td>
+                                        <td colspan="4" class="center"><em>No results found.</em></td>
                                     </tr>
-                                {% endfor %}
+                                {% endif %}
                             </tbody>
                         </table>
                         <a id="add" class="waves-effect waves-light btn light-blue hide-on-med-and-up" style="width: 100%; margin-top: 20px;">New Request</a>
