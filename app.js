@@ -433,6 +433,7 @@ app.post("/requests/", function(req, res) {
             req.db.collection("events").insertOne({
                 staffNumber: req.session.loggedin,
                 fullName: req.session.name,
+                team: req.session.team,
                 type: "leave",
                 from: req.body.from,
                 to: req.body.to,
@@ -470,6 +471,7 @@ app.post("/login/", function(req, res) {
         if (!err) {
             if (resp) {
                 req.session.loggedin = resp.staffNumber;
+                req.session.team = resp.team;
                 req.session.name = resp.firstName + " " + resp.lastName;
                 res.send({
                     status: 200,
