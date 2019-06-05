@@ -203,10 +203,90 @@ app.get("/partial/rota_view/", function(req, res) {
                                 year: req.query.year
                             }, function(err, week) {
                                 if (week && week.published === true) {
-                                    res.render("partials/rota_view", {
-                                        team: team,
-                                        week: week
-                                    });
+                                    var limit = new Date(1547942400000 + (parseInt((req.query.week + 1) * 604800000))).getTime();
+                                    if (limit < Date.now()) {
+                                        var users = [];
+                                        req.db.collection("shifts").find({
+                                            weekNumber: req.query.week,
+                                            year: req.query.year
+                                        }, function(err, resp) {
+                                            resp.toArray().then(function(shifts) {
+                                                var start = new Date(1547942400000 + (parseInt(req.query.week * 604800000))).getTime(),
+                                                    end = new Date(1547942400000 + (parseInt(req.query.week * 604800000) + (6 * 86400000))).getTime();
+                                                req.db.collection("events").find({
+                                                    $or: [
+                                                        { $and: [
+                                                                {
+                                                                    from: {
+                                                                        $lte: start
+                                                                    }
+                                                                },
+                                                                {
+                                                                    to: {
+                                                                        $gte: start
+                                                                    }
+                                                                }
+                                                            ] 
+                                                        },
+                                                        {
+                                                            $and: [
+                                                                {
+                                                                    from: {
+                                                                        $gte: start
+                                                                    }
+                                                                },
+                                                                {
+                                                                    from: {
+                                                                        $lte: end
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }, function(err, resp) {
+                                                    resp.toArray().then(function(events) {
+                                                        for (var shift of shifts) {
+                                                            if (users.map(function(x) { return x.staffNumber }).indexOf(shift.staffNumber) === -1) {
+                                                                users.push({
+                                                                    firstName: shift.fullName.split(" ")[0],
+                                                                    lastName: shift.fullName.split(" ")[1],
+                                                                    staffNumber: shift.staffNumber
+                                                                });
+                                                            }
+                                                        }
+                                                        for (var event of events) {
+                                                            if (users.map(function(x) { return x.staffNumber }).indexOf(event.staffNumber) === -1) {
+                                                                users.push({
+                                                                    firstName: event.fullName.split(" ")[0],
+                                                                    lastName: event.fullName.split(" ")[1],
+                                                                    staffNumber: event.staffNumber
+                                                                });
+                                                            }
+                                                        }
+                                                        users.sort(function(a, b) {
+                                                            if (a.firstName < b.firstName) {
+                                                                return -1;
+                                                            }
+                                                            if (a.firstName > b.firstName) {
+                                                                return 1;
+                                                            }
+                                                            return 0;
+                                                        });
+                                                        res.render("partials/rota_view", {
+                                                            team: users,
+                                                            week: week
+                                                        });
+                                                    });
+                                                });
+                                            });
+                                        });
+                                    }
+                                    else {
+                                        res.render("partials/rota_view", {
+                                            team: team,
+                                            week: week
+                                        });
+                                    }
                                 }
                                 else {
                                     res.render("partials/error", {
