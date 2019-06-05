@@ -2,7 +2,22 @@
 
 <div class="row valign-wrapper" style="height: 100%; margin: 0;">
     <div class="col s12">
-        <div class="card">
+        <div id="loading" style="width: 64px; margin: auto;">
+            <div class="preloader-wrapper big active">
+                <div class="spinner-layer spinner-blue-only">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="wrapper" class="card" style=" display: none;">
             <div class="card-content">
                 <div class="row" style="margin: 0;">
                     <div class="col s12 center">
@@ -16,45 +31,38 @@
                             <thead>
                                 <tr>
                                     <td rowspan="3">Name & <br> Staff Number</td>
-                                    <td colspan="3">Sunday</td>
-                                    <td colspan="3">Monday</td>
-                                    <td colspan="3">Tuesday</td>
-                                    <td colspan="3">Wednesday</td>
-                                    <td colspan="3">Thursday</td>
-                                    <td colspan="3">Friday</td>
-                                    <td colspan="3">Saturday</td>
+                                    <td colspan="2">Sunday</td>
+                                    <td colspan="2">Monday</td>
+                                    <td colspan="2">Tuesday</td>
+                                    <td colspan="2">Wednesday</td>
+                                    <td colspan="2">Thursday</td>
+                                    <td colspan="2">Friday</td>
+                                    <td colspan="2">Saturday</td>
                                 </tr>
                                 <tr>
-                                    <td colspan="3"></td>
-                                    <td colspan="3"></td>
-                                    <td colspan="3"></td>
-                                    <td colspan="3"></td>
-                                    <td colspan="3"></td>
-                                    <td colspan="3"></td>
-                                    <td colspan="3"></td>
+                                    <td colspan="2"></td>
+                                    <td colspan="2"></td>
+                                    <td colspan="2"></td>
+                                    <td colspan="2"></td>
+                                    <td colspan="2"></td>
+                                    <td colspan="2"></td>
+                                    <td colspan="2"></td>
                                 </tr>
                                 <tr>
                                     <td>In</td>
                                     <td>Out</td>
-                                    <td>Break</td>
                                     <td>In</td>
                                     <td>Out</td>
-                                    <td>Break</td>
                                     <td>In</td>
                                     <td>Out</td>
-                                    <td>Break</td>
                                     <td>In</td>
                                     <td>Out</td>
-                                    <td>Break</td>
                                     <td>In</td>
                                     <td>Out</td>
-                                    <td>Break</td>
                                     <td>In</td>
                                     <td>Out</td>
-                                    <td>Break</td>
                                     <td>In</td>
                                     <td>Out</td>
-                                    <td>Break</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -63,24 +71,17 @@
                                         <td style="border-left: 1px solid rgba(0,0,0,0.12);">{{ staff.firstName }} {{ staff.lastName }} <br> {{ staff.staffNumber }}</td>
                                         <td style="border-left: 1px solid rgba(0,0,0,0.12);"></td>
                                         <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px solid rgba(0,0,0,0.12);"></td>
                                         <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
                                         <td style="border-left: 1px solid rgba(0,0,0,0.12);"></td>
                                         <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
+                                        <td style="border-left: 1px solid rgba(0,0,0,0.12);"></td>
                                         <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
                                         <td style="border-left: 1px solid rgba(0,0,0,0.12);"></td>
                                         <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
-                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
                                         <td style="border-left: 1px solid rgba(0,0,0,0.12);"></td>
                                         <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
-                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
                                         <td style="border-left: 1px solid rgba(0,0,0,0.12);"></td>
-                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
-                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
-                                        <td style="border-left: 1px solid rgba(0,0,0,0.12);"></td>
-                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
-                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
-                                        <td style="border-left: 1px solid rgba(0,0,0,0.12);"></td>
-                                        <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
                                         <td style="border-left: 1px dotted rgba(0,0,0,0.12); border-right: 1px solid rgba(0,0,0,0.12);"></td>
                                     </tr>
                                 {% endfor %}
