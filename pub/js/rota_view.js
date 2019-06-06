@@ -1,3 +1,5 @@
+$(document).off("ready");
+
 function colour() {
     $.get("/week/", {
         week: $("#header").data("week"),
@@ -128,6 +130,7 @@ $(document).ready(function() {
             colour();
             $("#loading").fadeOut("fast", function() {
                 $("#wrapper").fadeIn();
+                stopOverflow();
             });
         }
         else {

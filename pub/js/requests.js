@@ -1,3 +1,7 @@
+$(document).undelegate("#new-request", "click");
+$(document).undelegate("#view-request", "click");
+$(document).undelegate("#delete-request", "click");
+
 $(document).delegate("#new-request", "click", function() {
     $.get("/partial/requests_new", function(res) {
         $("#content").fadeOut("fast", function() {
@@ -48,7 +52,26 @@ $(document).delegate("#delete-request", "click", function() {
             to: to
         },
         success: function(res) {
-            $("[data-from=" + from + "][data-to=" + to + "]").parent().parent().fadeOut();
+            switch (res.status) {
+                case 200:
+                    $("[data-from=" + from + "][data-to=" + to + "]").parent().parent().fadeOut();
+                    break;
+                case 400:
+                    M.toast({
+                        html: "An unknown error occured. Please try again later."
+                    });
+                    break;
+                case 403:
+                    M.toast({
+                        html: "Your session has expired. Please log in again to continue."
+                    });
+                    break;
+                case 500:
+                    M.toast({
+                        html: "The system could not contact the server. Please try again later."
+                    });
+                    break;
+            }
         }
     });
 });

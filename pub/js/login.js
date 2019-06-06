@@ -1,4 +1,4 @@
-function login() {
+$("#login").click(function() {
     var staffNumber = $("#staffnumber").val(),
         password = $("#password").val();
 
@@ -13,11 +13,6 @@ function login() {
                         html: "Logging In..."
                     });
                     window.location = "/";
-                    break;
-                case 401:
-                    M.toast({
-                        html: "You are not authorised to use this system."
-                    });
                     break;
                 case 404:
                     M.toast({
@@ -37,14 +32,10 @@ function login() {
             html: "Please enter a staff number and password."
         });
     }
-}
-
-$("#login").click(function() {
-    login();
 });
 
 $(document).on("keypress", function(e) {
     if (e.which == 13) {
-        login();
+        $("#login").click();
     }
 });

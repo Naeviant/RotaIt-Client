@@ -1,3 +1,6 @@
+$(document).undelegate("#cancel-request", "click");
+$(document).undelegate("#save-request", "click");
+
 $(document).delegate("#cancel-request", "click", function() {
     $(".sidenav a[data-page='requests']").click();
 });
@@ -14,11 +17,25 @@ $(document).delegate("#save-request", "click", function() {
             to: to,
             comment: comment
         }, function(res) {
-            if (res.status === 200) {
-                $(".sidenav a[data-page='requests']").click();
-            }
-            else {
-                
+            switch (res.status) {
+                case 200:
+                    $(".sidenav a[data-page='requests']").click();
+                    break;
+                case 400:
+                    M.toast({
+                        html: "An unknown error occured. Please try again later."
+                    });
+                    break;
+                case 403:
+                    M.toast({
+                        html: "Your session has expired. Please log in again to continue."
+                    });
+                    break;
+                case 500:
+                    M.toast({
+                        html: "The system could not contact the server. Please try again later."
+                    });
+                    break;
             }
         });
     }

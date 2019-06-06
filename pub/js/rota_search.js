@@ -1,3 +1,6 @@
+$("#search").off("click");
+$(document).off("keypress");
+
 function search() {
     var week = $("#week").val(),
         year = $("#year").val();
