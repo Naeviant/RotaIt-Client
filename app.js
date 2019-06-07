@@ -83,6 +83,7 @@ app.get("/partial/shifts/", function(req, res) {
                 $gt: d
             }
         }, {
+            sort: [["start", "ascending"]],
             limit: 5
         }, function(err, resp) {
             if (err) {
