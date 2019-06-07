@@ -1,16 +1,19 @@
 // Module Imports
 var express = require("express"),
     session = require("express-session"),
-    nunjucks = require("express-nunjucks"),
+    expressNunjucks = require("express-nunjucks"),
+    nunjucks = require("nunjucks"),
+    nunjucksEnv = new nunjucks.Environment(),
     mongodb = require("express-mongo-db"),
     bodyParser = require("body-parser"),
     cookieParser = require("cookie-parser"),
+    sendmail = require('sendmail')({ silent: true }),
     config = require("./config.json"),
     package = require("./package.json");
 
 // Setup Express App
 var app = express();
-var njk = nunjucks(app, {
+var njk = expressNunjucks(app, {
     watch: true,
     noCache: true,
     filters: {
@@ -34,6 +37,10 @@ var njk = nunjucks(app, {
             return days[d.getDay()];
         }
     }
+});
+nunjucksEnv.addFilter("toDate", function(t) {
+    var d = new Date(t);
+    return ("0" + d.getDate()).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2) + "/" + d.getFullYear();
 });
 app.set("views", __dirname + "/views");
 app.use(express.static(__dirname + "/pub"));
@@ -619,9 +626,43 @@ app.post("/requests/", function(req, res) {
                     });
                     return;
                 } 
-                res.send({
-                    status: 200,
-                    message: "Leave Request Submitted"
+                req.db.collection("users").findOne({
+                    staffNumber: req.session.loggedin
+                }, function(err, user) {
+                    if (err) {
+                        res.send({
+                            status: 500,
+                            message: "The system could not contact the server. Please try again later."
+                        });
+                        return;
+                    } 
+                    req.db.collection("users").find({
+                        team: user.team
+                    }, function(err, resp) {
+                        if (err) {
+                            res.send({
+                                status: 500,
+                                message: "The system could not contact the server. Please try again later."
+                            });
+                            return;
+                        }
+                        resp.toArray().then(function(team) {
+                            for (var member of team) {
+                                if (member.manager === true) {
+                                    sendmail({
+                                        from: "RotaIt Notifier <no-reply@rotait.xyz>",
+                                        to: member.email,
+                                        subject: "New annual leave request from " + req.session.name + ".",
+                                        html: nunjucksEnv.render("./emails/request.html", { firstName: member.firstName, user: req.session.name, from: req.body.from, to: req.body.to, new: true })
+                                    })
+                                }
+                            }
+                            res.send({
+                                status: 200,
+                                message: "Leave Request Submitted"
+                            });
+                        });
+                    });
                 });
             });
         }
@@ -695,11 +736,45 @@ app.delete("/request/", function(req, res) {
                         message: "The system could not contact the server. Please try again later."
                     });
                     return;
-                } 
-                res.send({
-                    status: 200,
-                    message: "Leave Request Deleted Successfully"
-                });
+                }
+                req.db.collection("users").findOne({
+                    staffNumber: req.session.loggedin
+                }, function(err, user) {
+                    if (err) {
+                        res.send({
+                            status: 500,
+                            message: "The system could not contact the server. Please try again later."
+                        });
+                        return;
+                    } 
+                    req.db.collection("users").find({
+                        team: user.team
+                    }, function(err, resp) {
+                        if (err) {
+                            res.send({
+                                status: 500,
+                                message: "The system could not contact the server. Please try again later."
+                            });
+                            return;
+                        }
+                        resp.toArray().then(function(team) {
+                            for (var member of team) {
+                                if (member.manager === true) {
+                                    sendmail({
+                                        from: "RotaIt Notifier <no-reply@rotait.xyz>",
+                                        to: member.email,
+                                        subject: "Withdrawn annual leave request from " + req.session.name + ".",
+                                        html: nunjucksEnv.render("./emails/request.html", { firstName: member.firstName, user: req.session.name, from: req.body.from, to: req.body.to, new: false })
+                                    })
+                                }
+                            }
+                            res.send({
+                                status: 200,
+                                message: "Leave Request Deleted Successfully"
+                            });
+                        });
+                    });
+                }); 
             });
         }
         else {

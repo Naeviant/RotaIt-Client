@@ -6,7 +6,7 @@
     "url": "https://hirst.xyz"
   },
   "bugs": "https://github.com/Naeviant/RotaIt-Client/issues",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "repository": {
     "type": "git",
     "url": "https://github.com/Naeviant/RotaIt-Client.git"
@@ -22,7 +22,8 @@
     "express-mongo-db": "^2.0.4",
     "express-nunjucks": "^2.2.3",
     "express-session": "^1.16.1",
-    "nunjucks": "^3.2.0"
+    "nunjucks": "^3.2.0",
+    "sendmail": "^1.4.1"
   },
   "devDependencies": {
     "nodemon": "^1.18.11"
