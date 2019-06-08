@@ -253,7 +253,7 @@ app.get("/partial/rota_view/", function(req, res) {
                                     return;
                                 } 
                                 if (week && week.published === true) {
-                                    var limit = new Date(1547942400000 + (parseInt((req.query.week + 1) * 604800000))).getTime();
+                                    var limit = new Date(1547942400000 + (parseInt((req.query.week + 1) * 604800000))).getTime() + ((parseInt(req.query.year) - 2019) * 31536000000);
                                     if (limit < Date.now()) {
                                         var users = [];
                                         req.db.collection("shifts").find({
@@ -268,8 +268,8 @@ app.get("/partial/rota_view/", function(req, res) {
                                                 return;
                                             } 
                                             resp.toArray().then(function(shifts) {
-                                                var start = new Date(1547942400000 + (parseInt(req.query.week * 604800000))).getTime(),
-                                                    end = new Date(1547942400000 + (parseInt(req.query.week * 604800000) + (6 * 86400000))).getTime();
+                                                var start = new Date(1547942400000 + (parseInt(req.query.week * 604800000))).getTime() + ((parseInt(req.query.year) - 2019) * 31536000000),
+                                                    end = new Date(1547942400000 + (parseInt(req.query.week * 604800000) + (6 * 86400000))).getTime() + ((parseInt(req.query.year) - 2019) * 31536000000);
                                                 req.db.collection("events").find({
                                                     $or: [
                                                         { $and: [
@@ -537,8 +537,8 @@ app.get("/rota/", function(req, res) {
 app.get("/events/", function(req, res) {
     if (req.session.loggedin) {
         if (req.query.week && req.query.year) {
-            var start = new Date(1547942400000 + (parseInt(req.query.week * 604800000))).getTime(),
-                end = new Date(1547942400000 + (parseInt(req.query.week * 604800000) + (6 * 86400000))).getTime();
+            var start = new Date(1547942400000 + (parseInt(req.query.week * 604800000))).getTime() + ((parseInt(req.query.year) - 2019) * 31536000000),
+                end = new Date(1547942400000 + (parseInt(req.query.week * 604800000) + (6 * 86400000))).getTime() + ((parseInt(req.query.year) - 2019) * 31536000000);
             req.db.collection("events").find({
                 $or: [
                     { $and: [

@@ -104,7 +104,7 @@ function colour() {
 
 $(document).ready(function() {
     $("#rota thead tr:nth-of-type(2) td").each(function(i) {
-        var d = new Date(1547942400000 + (parseInt($("#header").data("week")) * 604800000) + (i * 86400000));
+    var d = new Date(1547942400000 + (parseInt($("#header").data("week")) * 604800000) + ((parseInt($("#header").data("year")) - 2019) * 31536000000) - (Math.floor((parseInt($("#header").data("year")) - 2016) / 4) * 86400000) + (i * 86400000));
         $(this).html(("0" + d.getDate()).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2) + "/" + d.getFullYear());
     });
     $.get("/rota/", {

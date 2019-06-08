@@ -20,9 +20,9 @@ $(document).delegate(".sidenav a:not(#logout)", "click", function() {
         $(".sidenav").sidenav("close");
         $("#content").fadeOut("fast", function() {
             $("#content").html(res);
+            $('.material-tooltip').remove();
             M.AutoInit();
             $("#content").fadeIn("fast", function() {
-                $('.tooltip').tooltip("destroy");
                 stopOverflow();
             });
         });

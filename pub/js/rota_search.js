@@ -1,5 +1,6 @@
 $("#search").off("click");
 $(document).off("keypress");
+$(document).off("ready");
 
 function search() {
     var week = $("#week").val(),
@@ -37,4 +38,27 @@ $(document).on("keypress", function(e) {
     if (e.which == 13) {
         search();
     }
+});
+
+$(document).ready(function() {
+    var d = new Date(),
+        w = 0,
+        y = 0;
+    d.setUTCHours(0);
+    d.setUTCMinutes(0);
+    d.setUTCSeconds(0);
+    d.setUTCMilliseconds(0);
+    var n = d.getTime() - 1547942400000;
+    while (n >= 0) {
+        n -= 604800000;
+        if (n >= 0) {
+            w += 1;
+            if (w > 52) {
+                w = 1;
+                y += 1;
+            }
+        }
+    }
+    $("#week").html(w);
+    $("#year").html(2019 + y);
 });

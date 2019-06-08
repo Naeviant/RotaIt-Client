@@ -6,7 +6,7 @@ $(document).delegate("#new-request", "click", function() {
     $.get("/partial/requests_new", function(res) {
         $("#content").fadeOut("fast", function() {
             $("#content").html(res);
-            $('.tooltip').tooltip("destroy");
+            $('.material-tooltip').remove();
             M.AutoInit();
             $('.datepicker').datepicker({
                 format: "ddd dd mmm yyyy"
