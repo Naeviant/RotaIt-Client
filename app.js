@@ -119,6 +119,22 @@ app.get("/partial/shifts/", function(req, res) {
                     resp.toArray().then(function(weeks) {
                         req.db.collection("events").find({
                             staffNumber: req.session.loggedin,
+                            $and: [
+                                {
+                                    status: {
+                                        $not: {
+                                            $eq: "pending"
+                                        }
+                                    }
+                                },
+                                {
+                                    status: {
+                                        $not: {
+                                            $eq: "rejected"
+                                        }
+                                    }
+                                }
+                            ],
                             to: {
                                 $gt: d
                             }

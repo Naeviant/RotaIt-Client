@@ -28,7 +28,7 @@
                                             <td>{{ request.from|toDate }}</td>
                                             <td>{{ request.to|toDate }}</td>
                                             <td style="text-transform: capitalize;">{{ request.status }}</td>
-                                            <td><a id="view-request" data-user="{{ request.staffNumber }}" data-from="{{ request.from }}" data-to="{{ request.to }}" data-mycomments="{{ request.user_comment }}" data-managercomments="{{ request.manager_comment }}" class="waves-effect waves-light btn light-blue tooltipped" data-position="left" data-tooltip="View More"><i class="material-icons">more_horiz</i></a></td>
+                                            <td><a id="view-request" data-user="{{ request.staffNumber }}" data-from="{{ request.from }}" data-to="{{ request.to }}" data-mycomments="{{ request.user_comment }}" data-managercomments="{{ request.manager_comment }}" class="waves-effect waves-light btn light-blue tooltipped {% if request.status == "fixed" %} disabled {% endif %}" data-position="left" data-tooltip="View More"><i class="material-icons">more_horiz</i></a></td>
                                         </tr>
                                     {% endfor %}
                                 {% else %}

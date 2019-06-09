@@ -30,7 +30,7 @@ function colour() {
                                         $("#rota tbody tr:nth-of-type(" + (i + 1) + ") td:nth-of-type(" + (j * 2) + ")").addClass("hashed purple");
                                         $("#rota tbody tr:nth-of-type(" + (i + 1) + ") td:nth-of-type(" + (j * 2 + 1) + ")").addClass("hashed purple");
                                     }
-                                    if (event.type == "leave" && event.status == "approved") {
+                                    if (event.type == "leave" && (event.status == "approved" || event.status == "fixed")) {
                                         $("#rota tbody tr:nth-of-type(" + (i + 1) + ") td:nth-of-type(" + (j * 2) + ")").addClass("hashed blue");
                                         $("#rota tbody tr:nth-of-type(" + (i + 1) + ") td:nth-of-type(" + (j * 2 + 1) + ")").addClass("hashed blue");
                                     }
