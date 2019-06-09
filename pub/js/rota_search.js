@@ -59,6 +59,6 @@ $(document).ready(function() {
             }
         }
     }
-    $("#week").html(w);
-    $("#year").html(2019 + y);
+    $("#current-week").html(w);
+    $("#current-year").html(2019 + y);
 });

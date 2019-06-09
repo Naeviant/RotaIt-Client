@@ -1,4 +1,6 @@
 $(document).off("ready");
+$("#previous").off("click");
+$("#next").off("click");
 
 function colour() {
     $.get("/week/", {
@@ -138,5 +140,59 @@ $(document).ready(function() {
                 html: "An unknown error occurred. The existing rota could not be fully loaded."
             });
         }
+    });
+});
+
+$("#previous").click(function() {
+     var week = $("#header").data("week") - 1,
+        year = $("#header").data("year");
+
+    if (week < 1) {
+        week = 52;
+        year -= 1;
+    }
+
+    $.get("/partial/rota_view", {
+        week: week,
+        year: year
+    }, function(res) {
+        $("#content").fadeOut("fast", function() {
+            $("#content").html(res);
+            $('.material-tooltip').remove();
+            stopOverflow();
+            M.AutoInit();
+            $("#content").fadeIn("fast", function() {
+                if ($(".valign-wrapper>.col").height() > $(window).height() - 100) {
+                    $(".valign-wrapper").removeClass("valign-wrapper");
+                }
+            });
+        });
+    });
+});
+
+$("#next").click(function() {
+     var week = $("#header").data("week") + 1,
+        year = $("#header").data("year");
+
+    if (week > 52) {
+        week = 1;
+        year += 1;
+    }
+
+    $.get("/partial/rota_view", {
+        week: week,
+        year: year
+    }, function(res) {
+        $("#content").fadeOut("fast", function() {
+            $("#content").html(res);
+            $('.material-tooltip').remove();
+            stopOverflow();
+            M.AutoInit();
+            $("#content").fadeIn("fast", function() {
+                if ($(".valign-wrapper>.col").height() > $(window).height() - 100) {
+                    $(".valign-wrapper").removeClass("valign-wrapper");
+                }
+            });
+        });
     });
 });
