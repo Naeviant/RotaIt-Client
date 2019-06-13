@@ -25,6 +25,7 @@
                             <a href="#!" id="previous" class="btn-floating light-blue waves-effect waves-light tooltipped left" data-position="bottom" data-tooltip="Previous Week" style="margin-left: 5px;"><i class="material-icons">arrow_back</i></a>
                             <a href="#!" id="next" class="btn-floating light-blue waves-effect waves-light tooltipped left" data-position="bottom" data-tooltip="Next Week" style="margin-left: 5px;"><i class="material-icons">arrow_forward</i></a>
                             Rota for Week {{ week.weekNumber }} ({{ week.year }})
+                            <a href="#modal-export" class="btn-floating light-blue waves-effect waves-light right tooltipped modal-trigger" data-position="bottom" data-tooltip="Export Rotas" style="margin-left: 5px;"><i class="material-icons">forward</i></a>
                             <a href="#modal-colours" class="btn-floating light-blue waves-effect waves-light right tooltipped modal-trigger" data-position="bottom" data-tooltip="Colour Key" style="margin-left: 5px;"><i class="material-icons">format_color_fill</i></a>
                         </h4>
                     </div>
@@ -138,6 +139,39 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+</div>
+
+<div id="modal-export" class="modal bottom-sheet">
+    <div class="modal-content">
+        <h4>
+            Export Rotas
+            <a href="#!" class="modal-close btn-flat right"><i class="material-icons">close</i></a>
+            <a id="export" href="#!" class="btn-flat right">Export</a>
+        </h4>
+        <p>Rotas are exported as Excel Spreadsheets (.xlsx).</p>
+        <div class="row" style="margin: 0;">
+            <form class="col s12">
+                <div class="row">
+                    <div class="input-field col s3">
+                        <input id="export-from-week" type="number" min="1" max="52" value="{{ week.weekNumber }}" style="max-width: initial;">
+                        <label for="export-from-week">From Week</label>
+                    </div>
+                    <div class="input-field col s3">
+                        <input id="export-from-year" type="number" min="2019" value="{{ week.year }}" style="max-width: initial;">
+                        <label for="export-from-year">From Year</label>
+                    </div>
+                    <div class="input-field col s3">
+                        <input id="export-to-week" type="number" min="1" max="52" value="{{ week.weekNumber }}" style="max-width: initial;">
+                        <label for="export-to-week">To Week</label>
+                    </div>
+                    <div class="input-field col s3">
+                        <input id="export-to-year" type="number" min="2019" value="{{ week.year }}" style="max-width: initial;">
+                        <label for="export-to-year">To Year</label>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 

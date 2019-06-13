@@ -15,6 +15,7 @@ function search() {
                 $("#content").html(res);
                 stopOverflow();
                 M.AutoInit();
+                M.updateTextFields();
                 $("#content").fadeIn("fast", function() {
                     if ($(".valign-wrapper>.col").height() > $(window).height() - 100) {
                         $(".valign-wrapper").removeClass("valign-wrapper");

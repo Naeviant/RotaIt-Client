@@ -196,3 +196,19 @@ $("#next").click(function() {
         });
     });
 });
+
+$("#export").click(function() {
+    var from_week = $("#export-from-week").val(),
+        from_year = $("#export-from-year").val(),
+        to_week = $("#export-to-week").val(),
+        to_year = $("#export-to-year").val();
+
+    if (from_week && from_year && to_week && to_year && !isNaN(from_week) && !isNaN(from_year) && !isNaN(to_week) && !isNaN(to_year) && from_week >= 1 && from_week <= 52 && from_year >= 2019 && to_week >= 1 && to_week <= 52 && to_year >= 2019) {
+        window.open("/rota/export?from_week=" + from_week + "&from_year=" + from_year + "&to_week=" + to_week + "&to_year=" + to_year);
+    }
+    else {
+        M.toast({
+            html: "Please fill out all fields with valid values."
+        });
+    }
+});

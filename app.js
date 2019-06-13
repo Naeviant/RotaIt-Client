@@ -8,6 +8,7 @@ var express = require("express"),
     bodyParser = require("body-parser"),
     cookieParser = require("cookie-parser"),
     sendmail = require('sendmail')({ silent: true }),
+    excel = require("excel4node"),
     config = require("./config.json"),
     package = require("./package.json");
 
@@ -600,6 +601,430 @@ app.get("/events/", function(req, res) {
                     });
                 });
             });
+        }
+        else {
+            res.send({
+                status: 400,
+                message: "Invalid Parameters Sent"
+            });
+        }
+    }
+    else {
+        res.send({
+            status: 403,
+            message: "Authentication Failed"
+        });
+    }
+});
+
+// Accept Rota Export Requests
+app.get("/rota/export/", function(req, res) {
+    if (req.session.loggedin) {
+        if (req.query.from_week && req.query.from_year && req.query.to_week && req.query.to_year) {
+            req.query.from_week = parseInt(req.query.from_week);
+            req.query.from_year = parseInt(req.query.from_year);
+            req.query.to_week = parseInt(req.query.to_week);
+            req.query.to_year = parseInt(req.query.to_year);
+            if (!isNaN(req.query.from_week) && !isNaN(req.query.from_year) && !isNaN(req.query.to_week) && !isNaN(req.query.to_year) && req.query.from_week >= 1 && req.query.from_week <= 52 && req.query.from_year >= 2019 && req.query.to_week >= 1 && req.query.to_week <= 52 && req.query.to_year >= 2019) {
+                var from = req.query.from_week + ((req.query.from_year - 2019) * 52),
+                    to = req.query.to_week + ((req.query.to_year - 2019) * 52);
+                if (from <= to) {
+                    req.db.collection("users").findOne({
+                        staffNumber: req.session.loggedin
+                    }, function(err, resp) {
+                        if (err) {
+                            res.render("partials/error", {
+                                code: 500,
+                                message: "The system could not contact the server. Please try again later."
+                            });
+                            return;
+                        } 
+                        var users = [],
+                            query = [],
+                            i = req.query.from_week,
+                            j = req.query.from_year;
+                        while (i <= req.query.to_week || j < req.query.to_year) {
+                            query.push({
+                                weekNumber: i,
+                                year: j
+                            });
+                            i++;
+                            if (i > 52) {
+                                i = 1;
+                                j++;
+                            }
+                        }
+                        req.db.collection("weeks").find({
+                            $or: query
+                        }, function(err, resp) {
+                            resp.toArray().then(function(weeks) {
+                                req.db.collection("shifts").find({
+                                    $or: query
+                                }, function(err, resp) {
+                                    if (err) {
+                                        res.render("partials/error", {
+                                            code: 500,
+                                            message: "The system could not contact the server. Please try again later."
+                                        });
+                                        return;
+                                    } 
+                                    resp.toArray().then(function(shifts) {
+                                        var start = new Date(1547942400000 + (parseInt(req.query.from_week * 604800000))).getTime() + ((parseInt(req.query.from_year) - 2019) * 31536000000),
+                                            end = new Date(1547942400000 + (parseInt(req.query.to_week * 604800000) + (6 * 86400000))).getTime() + ((parseInt(req.query.to_year) - 2019) * 31536000000);
+                                        req.db.collection("events").find({
+                                            $or: [
+                                                { $and: [
+                                                        {
+                                                            from: {
+                                                                $lte: start
+                                                            }
+                                                        },
+                                                        {
+                                                            to: {
+                                                                $gte: start
+                                                            }
+                                                        }
+                                                    ] 
+                                                },
+                                                {
+                                                    $and: [
+                                                        {
+                                                            from: {
+                                                                $gte: start
+                                                            }
+                                                        },
+                                                        {
+                                                            from: {
+                                                                $lte: end
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }, function(err, resp) {
+                                            if (err) {
+                                                res.render("partials/error", {
+                                                    code: 500,
+                                                    message: "The system could not contact the server. Please try again later."
+                                                });
+                                                return;
+                                            } 
+                                            resp.toArray().then(function(events) {
+                                                for (var shift of shifts) {
+                                                    if (users.map(function(x) { return x.staffNumber }).indexOf(shift.staffNumber) === -1) {
+                                                        users.push({
+                                                            firstName: shift.fullName.split(" ")[0],
+                                                            lastName: shift.fullName.split(" ")[1],
+                                                            staffNumber: shift.staffNumber
+                                                        });
+                                                    }
+                                                }
+                                                for (var event of events) {
+                                                    if (users.map(function(x) { return x.staffNumber }).indexOf(event.staffNumber) === -1) {
+                                                        users.push({
+                                                            firstName: event.fullName.split(" ")[0],
+                                                            lastName: event.fullName.split(" ")[1],
+                                                            staffNumber: event.staffNumber
+                                                        });
+                                                    }
+                                                }
+                                                users.sort(function(a, b) {
+                                                    if (a.firstName < b.firstName) {
+                                                        return -1;
+                                                    }
+                                                    if (a.firstName > b.firstName) {
+                                                        return 1;
+                                                    }
+                                                    return 0;
+                                                });
+                                                var workbook = new excel.Workbook({
+                                                  defaultFont: {
+                                                    size: 11
+                                                  },
+                                                  dateFormat: "dd/mm/yyyy hh:mm:ss",
+                                                  workbookView: {
+                                                    showSheetTabs: false
+                                                  },
+                                                  author: req.session.name
+                                                }),
+                                                    spreadsheet = workbook.addWorksheet("Rota", {
+                                                        printOptions: {
+                                                            centerHorizontal: true,
+                                                            centerVertical: true
+                                                        },
+                                                        pageSetup: {
+                                                            blackAndWhite: false,
+                                                            fitToHeight: 1,
+                                                            fitToWidth: 1,
+                                                            orientation: "landscape"
+                                                        },
+                                                        sheetFormat: {
+                                                            defaultColWidth: 9
+                                                        }
+                                                    }),
+                                                    row = 1,
+                                                    i = req.query.from_week,
+                                                    j = req.query.from_year,
+                                                    days = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"],
+                                                    styles = {
+                                                        header: {
+                                                            alignment: {
+                                                                horizontal: "center",
+                                                                vertical: "center"
+                                                            },
+                                                            fill: {
+                                                                type: "pattern",
+                                                                patternType: "solid",
+                                                                fgColor: "F2F2F2"
+                                                            }
+                                                        },
+                                                        user: {
+                                                            fill: {
+                                                                type: "pattern",
+                                                                patternType: "solid",
+                                                                fgColor: "F2F2F2"
+                                                            }
+                                                        },
+                                                        early: {
+                                                            alignment: {
+                                                                horizontal: "center"
+                                                            },
+                                                            fill: {
+                                                                type: "pattern",
+                                                                patternType: "solid",
+                                                                fgColor: "FFFF97"
+                                                            }
+                                                        },
+                                                        middle: {
+                                                            alignment: {
+                                                                horizontal: "center"
+                                                            },
+                                                            fill: {
+                                                                type: "pattern",
+                                                                patternType: "solid",
+                                                                fgColor: "FFD797"
+                                                            }
+                                                        },
+                                                        late: {
+                                                            alignment: {
+                                                                horizontal: "center"
+                                                            },
+                                                            fill: {
+                                                                type: "pattern",
+                                                                patternType: "solid",
+                                                                fgColor: "F8BACC"
+                                                            }
+                                                        },
+                                                        leave: {
+                                                            alignment: {
+                                                                horizontal: "center"
+                                                            },
+                                                            fill: {
+                                                                type: "pattern",
+                                                                patternType: "solid",
+                                                                fgColor: "BBDEFB"
+                                                            }
+                                                        },
+                                                        medical: {
+                                                            alignment: {
+                                                                horizontal: "center"
+                                                            },
+                                                            fill: {
+                                                                type: "pattern",
+                                                                patternType: "solid",
+                                                                fgColor: "D29DDB"
+                                                            }
+                                                        },
+                                                        suspension: {
+                                                            alignment: {
+                                                                horizontal: "center"
+                                                            },
+                                                            fill: {
+                                                                type: "pattern",
+                                                                patternType: "solid",
+                                                                fgColor: "F44336"
+                                                            }
+                                                        },
+                                                        admin: {
+                                                            alignment: {
+                                                                horizontal: "center"
+                                                            },
+                                                            fill: {
+                                                                type: "pattern",
+                                                                patternType: "solid",
+                                                                fgColor: "A9D08E"
+                                                            }
+                                                        },
+                                                        elsewhere: {
+                                                            alignment: {
+                                                                horizontal: "center"
+                                                            },
+                                                            fill: {
+                                                                type: "pattern",
+                                                                patternType: "solid",
+                                                                fgColor: "808080"
+                                                            }
+                                                        }
+                                                    };
+
+                                                spreadsheet.column(1).setWidth(18);
+                                                while (i <= req.query.to_week || j < req.query.to_year) {
+                                                    var first = row;
+                                                    spreadsheet.cell(row, 1, row, 16).style({ border: { top: { style: "thick" } } });
+                                                    spreadsheet.cell(row, 1, row, 2, true).string("Week " + i).style(styles.header).style({ border: { right: { style: "thick" }, bottom: { style: "thin" }, left: { style: "thick" } } });
+                                                    spreadsheet.cell(row, 3, row, 4, true).string("Sunday").style(styles.header).style({ border: { right: { style: "thick" }, bottom: { style: "thin" } } });
+                                                    spreadsheet.cell(row, 5, row, 6, true).string("Monday").style(styles.header).style({ border: { right: { style: "thick" }, bottom: { style: "thin" } } });
+                                                    spreadsheet.cell(row, 7, row, 8, true).string("Tuesday").style(styles.header).style({ border: { right: { style: "thick" }, bottom: { style: "thin" } } });
+                                                    spreadsheet.cell(row, 9, row, 10, true).string("Wednesday").style(styles.header).style({ border: { right: { style: "thick" }, bottom: { style: "thin" } } });
+                                                    spreadsheet.cell(row, 11, row, 12, true).string("Thursday").style(styles.header).style({ border: { right: { style: "thick" }, bottom: { style: "thin" } } });
+                                                    spreadsheet.cell(row, 13, row, 14, true).string("Friday").style(styles.header).style({ border: { right: { style: "thick" }, bottom: { style: "thin" } } });
+                                                    spreadsheet.cell(row, 15, row, 16, true).string("Saturday").style(styles.header).style({ border: { right: { style: "thick" }, bottom: { style: "thin" } } });
+                                                    row++;
+                                                    var d = new Date(new Date(1547942400000 + (parseInt(i * 604800000))).getTime() + ((parseInt(j) - 2019) * 31536000000));
+                                                    spreadsheet.cell(row, 1, row + 1, 1, true).string("Name").style(styles.header).style({ border: { bottom: { style: "thick" }, right: { style: "thin" }, left: { style: "thick" } } });
+                                                    spreadsheet.cell(row, 2, row + 1, 2, true).string("Staff No.").style(styles.header).style({ border: { bottom: { style: "thick" }, right: { style: "thick" } } });
+                                                    for (var n = 2; n <= 14; n += 2) {
+                                                        spreadsheet.cell(row, n + 1, row, n + 2, true).string(("0" + d.getDate()).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2) + "/" + d.getFullYear()).style(styles.header).style({ border: { right: { style: "thick" }, bottom: { style: "thin" } } });
+                                                        d.setDate(d.getDate() + 1);
+                                                    }
+                                                    row++;
+                                                    for (var n = 2; n <= 14; n += 2) {
+                                                        spreadsheet.cell(row, n + 1).string("In").style(styles.header).style({ border: { bottom: { style: "thick" }, left: { style: "thick" }, right: { style: "thin" } } });
+                                                        spreadsheet.cell(row, n + 2).string("Out").style(styles.header).style({ border: { bottom: { style: "thick" }, right: { style: "thick" } } });
+                                                    }
+                                                    row++;
+                                                    var m = 0,
+                                                        border = "thin",
+                                                        changed;
+                                                    for (var user of users) {
+                                                        changed = false;
+                                                        if (m === 3) {
+                                                            border = "thick";
+                                                        }
+                                                        else {
+                                                            border = "thin";
+                                                        }
+                                                        spreadsheet.cell(row, 1).string(user.firstName + " " + user.lastName).style(styles.user).style({ border: { bottom: { style: border }, right: { style: "thin" }, left: { style: "thick" } } });
+                                                        spreadsheet.cell(row, 2).string(user.staffNumber).style(styles.user).style({ border: { bottom: { style: border }, right: { style: "thick" } } });
+                                                        var col = 1;
+                                                        for (var n = 0; n < 7; n++) {
+                                                            col = col + 2;
+                                                            var start = new Date(new Date(1547942400000 + (parseInt(i * 604800000))).getTime() + (n * 86400000) + ((parseInt(j) - 2019) * 31536000000)),
+                                                                end = new Date(start),
+                                                                week = weeks[weeks.map(function(x) { return x.weekNumber }).indexOf(i)],
+                                                                values = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                                                            end.setUTCHours(23, 59, 59);
+                                                            spreadsheet.cell(row, col).style({ border: { bottom: { style: border }, right: { style: "thin" } } });
+                                                            spreadsheet.cell(row, col + 1).style({ border: { bottom: { style: border }, right: { style: "thick" } } });
+                                                            if (week[days[n]].closed === true) {
+                                                                spreadsheet.cell(first, col, first, col + 1, true).string(values[n] + " (C)");
+                                                                spreadsheet.cell(row, col).style({ 
+                                                                    fill: {
+                                                                        type: "pattern",
+                                                                        patternType: "darkUp"
+                                                                    } 
+                                                                });
+                                                                spreadsheet.cell(row, col + 1).style({ 
+                                                                    fill: {
+                                                                        type: "pattern",
+                                                                        patternType: "darkUp"
+                                                                    } 
+                                                                });
+                                                                continue;
+                                                            }
+                                                            if (week[days[n]].bankHoliday === true) {
+                                                                spreadsheet.cell(first, col, first, col + 1, true).string(values[n] + " (BH)");
+                                                            }
+                                                            for (var shift of shifts) {
+                                                                if (shift.start > start.getTime() && shift.end < end.getTime() && shift.staffNumber == user.staffNumber) {
+                                                                    var s = new Date(shift.start),
+                                                                        e = new Date(shift.end),
+                                                                        style;
+                                                                    s.setUTCFullYear(1970, 0, 1);
+                                                                    e.setUTCFullYear(1970, 0, 1);
+                                                                    if (n === 0) {
+                                                                        style = styles.middle;
+                                                                    }
+                                                                    else if (s.getTime() <= week[days[n]].openCustomers.getTime()) {
+                                                                        style = styles.early;
+                                                                    }
+                                                                    else if (e.getTime() >= week[days[n]].closedCustomers.getTime()) {
+                                                                        style = styles.late;
+                                                                    }
+                                                                    else {
+                                                                        style = styles.middle;
+                                                                    }
+                                                                    spreadsheet.cell(row, col).string(("0" + s.getUTCHours()).slice(-2) + ":" + ("0" + (s.getUTCMinutes())).slice(-2)).style(style);
+                                                                    spreadsheet.cell(row, col + 1).string(("0" + e.getUTCHours()).slice(-2) + ":" + ("0" + (e.getUTCMinutes())).slice(-2)).style(style);
+                                                                    changed = true;
+                                                                }
+                                                            }
+                                                            for (var event of events) {
+                                                                if (start.getTime() >= event.from && start.getTime() <= event.to && event.staffNumber == user.staffNumber) {
+                                                                    var style;
+                                                                    if (event.type == "interviewing" || event.type == "course") {
+                                                                        style = styles.admin;
+                                                                    }
+                                                                    if (event.type == "sickness" || event.type == "maternity" || event.type == "paternity") {
+                                                                        style = styles.medical;
+                                                                    }
+                                                                    if (event.type == "leave" && (event.status == "approved" || event.status == "fixed")) {
+                                                                        style = styles.leave;
+                                                                    }
+                                                                    if (event.type == "suspension") {
+                                                                        style = styles.suspension;
+                                                                    }
+                                                                    if (event.type == "elsewhere") {
+                                                                        style = styles.elsewhere;
+                                                                    }
+                                                                    spreadsheet.cell(row, col).style(style);
+                                                                    spreadsheet.cell(row, col + 1).style(style);
+                                                                    changed = true;
+                                                                }
+                                                            }
+                                                        }
+                                                        if (changed) {
+                                                            m++;
+                                                            if (m > 3) {
+                                                                m = 0;
+                                                            }
+                                                        }
+                                                        else {
+                                                            spreadsheet.row(row).hide();
+                                                        }
+                                                        row++;
+                                                    }
+                                                    spreadsheet.cell(row, 1, row, 16).style({ border: { top: { style: "thick" } } });
+                                                    i++;
+                                                    if (i > 52) {
+                                                        i = 1;
+                                                        j++;
+                                                    }
+                                                    row++;
+                                                }
+                                                spreadsheet.setPrintArea(1, 1, row, 16);
+                                                workbook.write("Rota.xlsx", res);
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                }
+                else {
+                    res.send({
+                        status: 400,
+                        message: "Invalid Parameters Sent"
+                    });
+                }
+            }
+            else {
+                res.send({
+                    status: 400,
+                    message: "Invalid Parameters Sent"
+                });
+            }
         }
         else {
             res.send({
