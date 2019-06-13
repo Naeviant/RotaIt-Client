@@ -33,12 +33,22 @@ th, td {
     );
 }
 
-.hashed.black {
+.hashed.grey {
     background: repeating-linear-gradient(
       45deg,
       #eceff1,
       #eceff1 10px,
       #cfd8dc 10px,
       #cfd8dc 20px
+    );
+}
+
+.hashed.black {
+    background: repeating-linear-gradient(
+      45deg,
+      #161a1d,
+      #161a1d 10px,
+      #424e57 10px,
+      #424e57 20px
     );
 }

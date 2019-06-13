@@ -13,8 +13,30 @@ function colour() {
                 year: $("#header").data("year")
             }, function(resp) {
                 if (resp.status === 200) {
-                    $("#rota tbody tr td").removeClass("yellow orange pink lighten-5")
                     var keys = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+                    $("#rota tbody tr td").removeClass("yellow orange pink green purple blue red grey black hashed lighten-5");
+                    for (var j = 0; j < 7; j++) {
+                        if (res.week[keys[j]].bankHoliday === true) {
+                            $("#rota thead tr:nth-of-type(1) td:nth-of-type(" + (j + 2) + ")").html($("#rota thead tr:nth-of-type(1) td:nth-of-type(" + (j + 2) + ")").html().replace("(BH)", ""));
+                            $("#rota thead tr:nth-of-type(1) td:nth-of-type(" + (j + 2) + ")").html($("#rota thead tr:nth-of-type(1) td:nth-of-type(" + (j + 2) + ")").html() + " (BH)");
+                        }
+                        else {
+                            $("#rota thead tr:nth-of-type(1) td:nth-of-type(" + (j + 2) + ")").html($("#rota thead tr:nth-of-type(1) td:nth-of-type(" + (j + 2) + ")").html().replace("(BH)", ""));
+                        }
+                        if (res.week[keys[j]].closed === true) {
+                            $("#rota thead tr:nth-of-type(1) td:nth-of-type(" + (j + 2) + ")").html($("#rota thead tr:nth-of-type(1) td:nth-of-type(" + (j + 2) + ")").html().replace("(C)", ""));
+                            $("#rota thead tr:nth-of-type(1) td:nth-of-type(" + (j + 2) + ")").html($("#rota thead tr:nth-of-type(1) td:nth-of-type(" + (j + 2) + ")").html() + " (C)");
+                            $("#rota tbody td:nth-of-type(" + ((2 * j) + 2) + ")").html("--:--");
+                            $("#rota tbody td:nth-of-type(" + ((2 * j) + 3) + ")").html("--:--");
+                            $("#rota tbody td:nth-of-type(" + ((2 * j) + 2) + ")").attr("style", "text-indent: 100%; white-space: nowrap; overflow: hidden;");
+                            $("#rota tbody td:nth-of-type(" + ((2 * j) + 3) + ")").attr("style", "text-indent: 100%; white-space: nowrap; overflow: hidden;");
+                            $("#rota tbody td:nth-of-type(" + ((2 * j) + 2) + ")").addClass("hashed black");
+                            $("#rota tbody td:nth-of-type(" + ((2 * j) + 3) + ")").addClass("hashed black");
+                        }
+                        else {
+                            $("#rota thead tr:nth-of-type(1) td:nth-of-type(" + (j + 2) + ")").html($("#rota thead tr:nth-of-type(1) td:nth-of-type(" + (j + 2) + ")").html().replace("(C)", ""));
+                        }
+                    }
                     $("#rota tbody tr").each(function(i) {
                         var staffNumber = $("#rota tbody tr:nth-of-type(" + (i + 1) + ") td:nth-of-type(1)").html().split(" <br> ")[1];
 
