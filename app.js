@@ -1043,34 +1043,25 @@ app.get("/rota/export/", function(req, res) {
 
 // Accept New Leave Requests
 app.post("/requests/", function(req, res) {
-    if (req.body.from && req.body.to) {
-        req.body.from = parseInt(req.body.from);
-        req.body.to = parseInt(req.body.to);
-        if (!req.body.comment) {
-            req.body.comment = "";
-        }
-        if (!isNaN(req.body.from) && !isNaN(req.body.to) && req.body.from <= req.body.to) {
-            req.db.collection("events").insertOne({
-                staffNumber: req.session.loggedin,
-                fullName: req.session.name,
-                team: req.session.team,
-                type: "leave",
-                from: req.body.from,
-                to: req.body.to,
-                status: "pending",
-                user_comment: req.body.comment,
-                manager_comment: "" 
-            }, function(err, done) {
-                if (err) {
-                    res.send({
-                        status: 500,
-                        message: "The system could not contact the server. Please try again later."
-                    });
-                    return;
-                } 
-                req.db.collection("users").findOne({
-                    staffNumber: req.session.loggedin
-                }, function(err, user) {
+    if (req.session.loggedin) {
+        if (req.body.from && req.body.to) {
+            req.body.from = parseInt(req.body.from);
+            req.body.to = parseInt(req.body.to);
+            if (!req.body.comment) {
+                req.body.comment = "";
+            }
+            if (!isNaN(req.body.from) && !isNaN(req.body.to) && req.body.from <= req.body.to) {
+                req.db.collection("events").insertOne({
+                    staffNumber: req.session.loggedin,
+                    fullName: req.session.name,
+                    team: req.session.team,
+                    type: "leave",
+                    from: req.body.from,
+                    to: req.body.to,
+                    status: "pending",
+                    user_comment: req.body.comment,
+                    manager_comment: "" 
+                }, function(err, done) {
                     if (err) {
                         res.send({
                             status: 500,
@@ -1078,35 +1069,52 @@ app.post("/requests/", function(req, res) {
                         });
                         return;
                     } 
-                    req.db.collection("users").find({
-                        team: user.team
-                    }, function(err, resp) {
+                    req.db.collection("users").findOne({
+                        staffNumber: req.session.loggedin
+                    }, function(err, user) {
                         if (err) {
                             res.send({
                                 status: 500,
                                 message: "The system could not contact the server. Please try again later."
                             });
                             return;
-                        }
-                        resp.toArray().then(function(team) {
-                            for (var member of team) {
-                                if (member.manager === true) {
-                                    sendmail({
-                                        from: "RotaIt Notifier <no-reply@rotait.xyz>",
-                                        to: member.email,
-                                        subject: "New annual leave request from " + req.session.name + ".",
-                                        html: nunjucksEnv.render("./emails/request.html", { firstName: member.firstName, user: req.session.name, from: req.body.from, to: req.body.to, new: true })
-                                    })
-                                }
+                        } 
+                        req.db.collection("users").find({
+                            team: user.team
+                        }, function(err, resp) {
+                            if (err) {
+                                res.send({
+                                    status: 500,
+                                    message: "The system could not contact the server. Please try again later."
+                                });
+                                return;
                             }
-                            res.send({
-                                status: 200,
-                                message: "Leave Request Submitted"
+                            resp.toArray().then(function(team) {
+                                for (var member of team) {
+                                    if (member.manager === true) {
+                                        sendmail({
+                                            from: "RotaIt Notifier <no-reply@rotait.xyz>",
+                                            to: member.email,
+                                            subject: "New annual leave request from " + req.session.name + ".",
+                                            html: nunjucksEnv.render("./emails/request.html", { firstName: member.firstName, user: req.session.name, from: req.body.from, to: req.body.to, new: true })
+                                        })
+                                    }
+                                }
+                                res.send({
+                                    status: 200,
+                                    message: "Leave Request Submitted"
+                                });
                             });
                         });
                     });
                 });
-            });
+            }
+            else {
+                res.send({
+                    status: 400,
+                    message: "Invalid Parameters Sent"
+                });
+            }
         }
         else {
             res.send({
@@ -1117,8 +1125,8 @@ app.post("/requests/", function(req, res) {
     }
     else {
         res.send({
-            status: 400,
-            message: "Invalid Parameters Sent"
+            status: 403,
+            message: "Authentication Failed"
         });
     }
 });

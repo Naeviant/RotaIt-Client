@@ -54,7 +54,13 @@ $(document).delegate("#delete-request", "click", function() {
         success: function(res) {
             switch (res.status) {
                 case 200:
-                    $("[data-from=" + from + "][data-to=" + to + "]").parent().parent().fadeOut();
+                    $("[data-from=" + from + "][data-to=" + to + "]").parent().parent().fadeOut(function() {
+                        $("[data-from=" + from + "][data-to=" + to + "]").parent().parent().remove();
+                        if ($("#requests tr").length === 0) {
+                            $("#requests").append("<tr id=\"none\" style=\"display: none;\"><td colspan=\"6\" class=\"center\"><em>No results found.</em></td></tr>");
+                            $("#none").fadeIn();
+                        }
+                    });
                     break;
                 case 400:
                     M.toast({

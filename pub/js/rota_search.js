@@ -60,6 +60,8 @@ $(document).ready(function() {
             }
         }
     }
-    $("#current-week").html(w);
-    $("#current-year").html(2019 + y);
+    
+    $("#week").val(w);
+    $("#year").val(2019 + y);
+    M.updateTextFields();
 });
