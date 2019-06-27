@@ -63,7 +63,7 @@ app.use(session({
 }));
 
 // Gonfigure Database
-app.use(mongodb("mongodb://localhost/rotait"));
+app.use(mongodb("mongodb://localhost/" + config.app.db));
 
 // App Local Variables
 app.locals = {
@@ -1288,13 +1288,16 @@ app.post("/requests/", function(req, res) {
                                 for (var member of team) {
                                     // Check if Staff Member is a Manager
                                     if (member.manager === true) {
-                                        // Send Email to Manager
-                                        sendmail({
-                                            from: "RotaIt Notifier <no-reply@rotait.xyz>",
-                                            to: member.email,
-                                            subject: "New annual leave request from " + req.session.name + ".",
-                                            html: nunjucksEnv.render("./emails/request.html", { firstName: member.firstName, user: req.session.name, from: req.body.from, to: req.body.to, new: true })
-                                        });
+                                        // Check if Emails are Enabled
+                                        if (config.app.emails === true) {
+                                            // Send Email to Manager
+                                            sendmail({
+                                                from: "RotaIt Notifier <no-reply@rotait.xyz>",
+                                                to: member.email,
+                                                subject: "New annual leave request from " + req.session.name + ".",
+                                                html: nunjucksEnv.render("./emails/request.html", { firstName: member.firstName, user: req.session.name, from: req.body.from, to: req.body.to, new: true })
+                                            });
+                                        }
                                     }
                                 }
                                 // Send Success Response
@@ -1431,13 +1434,16 @@ app.delete("/request/", function(req, res) {
                             for (var member of team) {
                                 // Check if Staff Member is a Manager
                                 if (member.manager === true) {
-                                    // Send Email to Manager
-                                    sendmail({
-                                        from: "RotaIt Notifier <no-reply@rotait.xyz>",
-                                        to: member.email,
-                                        subject: "Withdrawn annual leave request from " + req.session.name + ".",
-                                        html: nunjucksEnv.render("./emails/request.html", { firstName: member.firstName, user: req.session.name, from: req.body.from, to: req.body.to, new: false })
-                                    });
+                                    // Check if Emails are Enabled
+                                    if (config.app.emails === true) {
+                                        // Send Email to Manager
+                                        sendmail({
+                                            from: "RotaIt Notifier <no-reply@rotait.xyz>",
+                                            to: member.email,
+                                            subject: "Withdrawn annual leave request from " + req.session.name + ".",
+                                            html: nunjucksEnv.render("./emails/request.html", { firstName: member.firstName, user: req.session.name, from: req.body.from, to: req.body.to, new: false })
+                                        });
+                                    }
                                 }
                             }
                             // Send Success Response
