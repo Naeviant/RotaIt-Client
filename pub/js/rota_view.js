@@ -82,8 +82,8 @@ function colour() {
                                     }
                                     // Check if Event is Working Elsewhere
                                     if (event.type == "elsewhere") {
-                                        $("#rota tbody tr:nth-of-type(" + (i + 1) + ") td:nth-of-type(" + (j * 2) + ")").addClass("hashed black");
-                                        $("#rota tbody tr:nth-of-type(" + (i + 1) + ") td:nth-of-type(" + (j * 2 + 1) + ")").addClass("hashed black");
+                                        $("#rota tbody tr:nth-of-type(" + (i + 1) + ") td:nth-of-type(" + (j * 2) + ")").addClass("hashed grey");
+                                        $("#rota tbody tr:nth-of-type(" + (i + 1) + ") td:nth-of-type(" + (j * 2 + 1) + ")").addClass("hashed grey");
                                     }
                                 }
                             }

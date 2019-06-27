@@ -1217,6 +1217,12 @@ app.get("/rota/export/", function(req, res) {
     }
 });
 
+// Handle 404 Errors
+app.get("*", function(req, res) {
+    // Redirect Back to Root Page
+    res.redirect("/");
+});
+
 // Accept New Leave Requests
 app.post("/requests/", function(req, res) {
     // Check User is Logged In
