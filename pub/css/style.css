@@ -37,3 +37,23 @@ input:not([type]):focus:not([readonly])+label, input[type=text]:not(.browser-def
 #availability th, #availability td {
     text-align: center;
 }
+
+/* Responsive Font Sizes */
+th, td {
+    font-size: 1.6vh;
+}
+h4#header {
+    font-size: 3.6vh;
+}
+h5 {
+    font-size: 2.6vh;
+}
+.btn-floating {
+    height: 4.3vh;
+    width: 4.3vh;
+    line-height: 4.3vh;
+}
+.btn-floating i {
+    line-height: 4.3vh;
+    font-size: 2.6vh;
+}

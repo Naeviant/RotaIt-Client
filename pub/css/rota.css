@@ -4,6 +4,11 @@ th, td {
     padding: 4px;
 }
 
+/* Set Height of Cells */
+#rota tbody td {
+    height: 39px;
+}
+
 /* Custom Hashed Colours */
 .hashed.blue {
     background: repeating-linear-gradient(

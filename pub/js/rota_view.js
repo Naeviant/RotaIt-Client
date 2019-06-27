@@ -22,7 +22,7 @@ $(document).ready(function() {
             // Loop Through Each Row of Table
             $("#rota tbody tr").each(function(i) {
                 // Get Data from HTML
-                var staffNumber = $("#rota tbody tr:nth-of-type(" + (i + 1) + ") td:nth-of-type(1)").html().split(" <br> ")[1],
+                var staffNumber = $("#rota tbody tr:nth-of-type(" + (i + 1) + ") td:nth-of-type(1) span").html().split("<br> ")[1],
                     shifts = res.rota.filter(function(x) { return x.staffNumber == staffNumber; });
 
                 // Loop Through Each Day
@@ -86,7 +86,7 @@ $(document).ready(function() {
                             // Loop Through Each Row of Table
                             $("#rota tbody tr").each(function(i) {
                                 // Get Staff Number from Current Row
-                                var staffNumber = $("#rota tbody tr:nth-of-type(" + (i + 1) + ") td:nth-of-type(1)").html().split(" <br> ")[1];
+                                var staffNumber = $("#rota tbody tr:nth-of-type(" + (i + 1) + ") td:nth-of-type(1) span").html().split("<br> ")[1];
 
                                 // Loop Through Each Day
                                 for (var event of resp.events) {
@@ -154,7 +154,7 @@ $(document).ready(function() {
                                     }
                                     // Work Out Contents of Cell
                                     if (j % 2 === 1) {
-                                        // Get Shift Start and Store Opening Time6 for Day
+                                        // Get Shift Start and Store Opening Times for Day
                                         var start = new Date(Date.UTC(parseInt($("#rota thead tr:nth-of-type(2) td:nth-of-type(" + (n + 1) + ")").html().split("/")[2]), parseInt($("#rota thead tr:nth-of-type(2) td:nth-of-type(" + (n + 1) + ")").html().split("/")[1]) - 1, parseInt($("#rota thead tr:nth-of-type(2) td:nth-of-type(" + (n + 1) + ")").html().split("/")[0]), parseInt($("#rota tbody tr:nth-of-type(" + (i + 1) + ") td:nth-of-type(" + (j + 1) + ")").html().split(":")[0]), parseInt($("#rota tbody tr:nth-of-type(" + (i + 1) + ") td:nth-of-type(" + (j + 1) + ")").html().split(":")[1]))).getTime(),
                                             open = new Date(Date.UTC(parseInt($("#rota thead tr:nth-of-type(2) td:nth-of-type(" + (n + 1) + ")").html().split("/")[2]), parseInt($("#rota thead tr:nth-of-type(2) td:nth-of-type(" + (n + 1) + ")").html().split("/")[1]) - 1, parseInt($("#rota thead tr:nth-of-type(2) td:nth-of-type(" + (n + 1) + ")").html().split("/")[0]))).getTime() + new Date(res.week[today]["openCustomers"]).getTime();
                                         // Check if the Shift Starts at or Before Store Opening

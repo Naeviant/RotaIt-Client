@@ -22,9 +22,9 @@
                 <div class="row" style="margin: 0;">
                     <div class="col s12 center">
                         <h4 id="header" data-week="{{ week.weekNumber }}" data-year="{{ week.year }}">
-                            <a href="#!" id="previous" class="btn-floating light-blue waves-effect waves-light tooltipped left" data-position="bottom" data-tooltip="Previous Week" style="margin-left: 5px;"><i class="material-icons">arrow_back</i></a>
-                            <a href="#!" id="next" class="btn-floating light-blue waves-effect waves-light tooltipped left" data-position="bottom" data-tooltip="Next Week" style="margin-left: 5px;"><i class="material-icons">arrow_forward</i></a>
-                            Rota for Week {{ week.weekNumber }} ({{ week.year }})
+                            <a href="#!" id="previous" class="btn-floating light-blue waves-effect waves-light tooltipped left hide-on-small-only" data-position="bottom" data-tooltip="Previous Week" style="margin-left: 5px;"><i class="material-icons">arrow_back</i></a>
+                            <a href="#!" id="next" class="btn-floating light-blue waves-effect waves-light tooltipped left hide-on-small-only" data-position="bottom" data-tooltip="Next Week" style="margin-left: 5px;"><i class="material-icons">arrow_forward</i></a>
+                            Rota for Week {{ week.weekNumber }} <span id="year" class="hide-on-small-only">({{ week.year }})</span>
                             <a href="#modal-export" class="btn-floating light-blue waves-effect waves-light right tooltipped modal-trigger" data-position="bottom" data-tooltip="Export Rotas" style="margin-left: 5px;"><i class="material-icons">forward</i></a>
                             <a href="#modal-colours" class="btn-floating light-blue waves-effect waves-light right tooltipped modal-trigger" data-position="bottom" data-tooltip="Colour Key" style="margin-left: 5px;"><i class="material-icons">format_color_fill</i></a>
                         </h4>
@@ -33,7 +33,7 @@
                         <table id="rota">
                             <thead>
                                 <tr>
-                                    <td rowspan="3">Name & <br> Staff Number</td>
+                                    <td rowspan="3">Name <span id="staff-number" class="hide-on-small-only">& <br> Staff Number</span></td>
                                     <td colspan="2">Sunday</td>
                                     <td colspan="2">Monday</td>
                                     <td colspan="2">Tuesday</td>
@@ -71,7 +71,7 @@
                             <tbody>
                                 {% for staff in team %}
                                     <tr>
-                                        <td style="border-left: 1px solid rgba(0,0,0,0.12);">{{ staff.firstName }} {{ staff.lastName }} <br> {{ staff.staffNumber }}</td>
+                                        <td style="border-left: 1px solid rgba(0,0,0,0.12);">{{ staff.firstName }} {{ staff.lastName }} <span id="staff-number" class="hide-on-small-only"><br> {{ staff.staffNumber }}</span></td>
                                         <td style="border-left: 1px solid rgba(0,0,0,0.12);"></td>
                                         <td style="border-left: 1px dotted rgba(0,0,0,0.12);"></td>
                                         <td style="border-left: 1px solid rgba(0,0,0,0.12);"></td>
