@@ -2,7 +2,6 @@
 html, body {
     height: 100%;
 }
-
 #content {
     height: calc(100% - 64px);
 }
@@ -17,24 +16,19 @@ input:not([type]):focus:not([readonly]), input[type=text]:not(.browser-default):
     border-bottom: 1px solid #03a9f4;
     box-shadow: 0 1px 0 0 #03a9f4;
 }
-
 input:not([type]):focus:not([readonly])+label, input[type=text]:not(.browser-default):focus:not([readonly])+label, input[type=password]:not(.browser-default):focus:not([readonly])+label, input[type=email]:not(.browser-default):focus:not([readonly])+label, input[type=url]:not(.browser-default):focus:not([readonly])+label, input[type=time]:not(.browser-default):focus:not([readonly])+label, input[type=date]:not(.browser-default):focus:not([readonly])+label, input[type=datetime]:not(.browser-default):focus:not([readonly])+label, input[type=datetime-local]:not(.browser-default):focus:not([readonly])+label, input[type=tel]:not(.browser-default):focus:not([readonly])+label, input[type=number]:not(.browser-default):focus:not([readonly])+label, input[type=search]:not(.browser-default):focus:not([readonly])+label, textarea.materialize-textarea:focus:not([readonly])+label, .dropdown-content li>span {
     color: #03a9f4;
 }
-
 [type="checkbox"].filled-in:checked+span:not(.lever):after {
     border: 2px solid #03a9f4;
     background-color: #03a9f4;
 }
-
 .datepicker-date-display, .datepicker-table td.is-selected, button:focus {
     background-color: #03a9f4;
 }
-
 .datepicker-day-button:focus {
     background-color: rgba(3, 169, 244, 0.25);
 }
-
 .datepicker-table td.is-today:not(.is-selected), .datepicker-cancel, .datepicker-clear, .datepicker-today, .datepicker-done {
     color: #03a9f4;
 }

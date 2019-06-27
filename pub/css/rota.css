@@ -1,8 +1,10 @@
+/* Center All Cells */
 th, td {
     text-align: center;
     padding: 4px;
 }
 
+/* Custom Hashed Colours */
 .hashed.blue {
     background: repeating-linear-gradient(
       45deg,
@@ -12,7 +14,6 @@ th, td {
       #bbdefb 20px
     );
 }
-
 .hashed.red {
     background: repeating-linear-gradient(
       45deg,
@@ -22,7 +23,6 @@ th, td {
       #ef9a9a 20px
     );
 }
-
 .hashed.purple {
     background: repeating-linear-gradient(
       45deg,
@@ -32,7 +32,6 @@ th, td {
       #e1bee7 20px
     );
 }
-
 .hashed.grey {
     background: repeating-linear-gradient(
       45deg,
@@ -42,7 +41,6 @@ th, td {
       #cfd8dc 20px
     );
 }
-
 .hashed.black {
     background: repeating-linear-gradient(
       45deg,
