@@ -316,7 +316,7 @@ app.get("/partial/rota_view/", function(req, res) {
                                     return;
                                 } 
                                 // Check if Week is Published
-                                if (week && week.published === true) {
+                                if (week && week.published.indexOf(req.session.team) > -1) {
                                     // Define Limit of When a Week is in the Past
                                     var limit = new Date(1547942400000 + (parseInt((req.query.week + 1) * 604800000))).getTime() + ((parseInt(req.query.year) - 2019) * 31536000000);
                                     // Check if Week is in the Past
@@ -326,7 +326,8 @@ app.get("/partial/rota_view/", function(req, res) {
                                         // Get Week's Shift Data from Database
                                         req.db.collection("shifts").find({
                                             weekNumber: req.query.week,
-                                            year: req.query.year
+                                            year: req.query.year,
+                                            team: req.session.team
                                         }, function(err, resp) {
                                             // Handle Database Connection Failures
                                             if (err) {
@@ -371,7 +372,8 @@ app.get("/partial/rota_view/", function(req, res) {
                                                                 }
                                                             ]
                                                         }
-                                                    ]
+                                                    ],
+                                                    team: req.session.team
                                                 }, function(err, resp) {
                                                     // Handle Database Connection Failures
                                                     if (err) {
@@ -614,7 +616,8 @@ app.get("/rota/", function(req, res) {
             // Get Shift Data from Database
             req.db.collection("shifts").find({
                 weekNumber: req.query.week,
-                year: req.query.year
+                year: req.query.year,
+                team: req.session.team
             }, function(err, shifts) {
                 // Handle Database Connection Failures
                 if (err) {
@@ -690,7 +693,8 @@ app.get("/events/", function(req, res) {
                             }
                         ]
                     }
-                ]
+                ],
+                team: req.session.team
             }, function(err, resp) {
                 // Handle Database Connection Failures
                 if (err) {
@@ -781,7 +785,9 @@ app.get("/rota/export/", function(req, res) {
                             resp.toArray().then(function(weeks) {
                                 // Get Shift Data from Database
                                 req.db.collection("shifts").find({
-                                    $or: query
+                                    $or: query,
+                                    team: req.session.team,
+                                    provisional: false
                                 }, function(err, resp) {
                                     // Handle Database Connection Failures
                                     if (err) {
@@ -826,7 +832,8 @@ app.get("/rota/export/", function(req, res) {
                                                         }
                                                     ]
                                                 }
-                                            ]
+                                            ],
+                                            team: req.session.team
                                         }, function(err, resp) {
                                             // Handle Database Connection Failures
                                             if (err) {
